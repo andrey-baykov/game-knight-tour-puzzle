@@ -1,54 +1,54 @@
+def get_position_indexes(position) -> tuple:
+    x = position[0] - 1
+    y = position[1] - 1
+    output = [x, y]
+    return tuple(output)
+
+
 class Game:
     '''
     Matrix (x, y): x - horizontal, y - vertical
     Moves (x, y)
     '''
     matrix = []
-    board_dimension = None
+    board_dimension = {'x': 0, 'y': 0}
     cell_size = 0
     last_move = tuple()
-    possible_moves = [(2, 1),
-                      (1, 2),
-                      (-1, 2),
-                      (-2, 1),
-                      (-2, -1),
-                      (-1, -2),
-                      (1, -2),
-                      (2, -1)
-                      ]
+    possible_moves = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
 
     def __init__(self, board_dimension):
-        self.board_dimension = board_dimension
-        self.cell_size = len(str(board_dimension[0] * board_dimension[1]))
-        line = ["_" * self.cell_size for x in range(self.board_dimension[0])]
-        for _ in range(self.board_dimension[1]):
+        self.board_dimension['x'] = board_dimension[0]
+        self.board_dimension['y'] = board_dimension[1]
+        self.cell_size = len(str(self.board_dimension['x'] * self.board_dimension['y']))
+        line = ["_" * self.cell_size for x in range(self.board_dimension['x'])]
+        for _ in range(self.board_dimension['y']):
             self.matrix.append(line.copy())
 
-    def set_position(self, position) -> None:
-        if self.is_position_clear(position):
-            x, y = position
-            self.matrix[y - 1][x - 1] = " " * (self.cell_size - 1) + "X"
-            self.last_move = position
+    def set_position(self, position, symbol='X') -> None:
+        # if self.is_position_clear(position):
+        x, y = position
+        self.matrix[y][x] = " " * (self.cell_size - 1) + symbol
+        self.last_move = position
 
     def is_position_clear(self, position) -> bool:
         x, y = position
-        if self.matrix[y - 1][x - 1] == "_" * self.cell_size:
+        if self.matrix[y][x] == "_" * self.cell_size:
             return True
         return False
 
     def print_current_field(self) -> None:
         m = self.matrix
 
-        print(f" " + "-" * (self.board_dimension[0] * (self.cell_size + 1) + 3))
-        for x in range(self.board_dimension[1], 0, -1):
+        print(f" " + "-" * (self.board_dimension['x'] * (self.cell_size + 1) + 3))
+        for x in range(self.board_dimension['y'], 0, -1):
             line = x
-            x = " " * (len(str(self.board_dimension[1])) - len(str(x))) + str(x)
+            x = " " * (len(str(self.board_dimension['y'])) - len(str(x))) + str(x)
             cells_str = " ".join([cell for cell in m[line - 1]])
             print(f"{x}| " + cells_str + " |")
 
-        print(f" " + "-" * (self.board_dimension[0] * (self.cell_size + 1) + 3))
+        print(f" " + "-" * (self.board_dimension['x'] * (self.cell_size + 1) + 3))
         last_str = " ".join(
-            [" " * (self.cell_size - len(str(x + 1))) + str(x + 1) for x in range(self.board_dimension[0])])
+            [" " * (self.cell_size - len(str(x + 1))) + str(x + 1) for x in range(self.board_dimension['x'])])
         print(f"   {last_str}")
 
     def check_possible_move(self):
@@ -70,7 +70,7 @@ def verify_input(input_string) -> bool:
     if len(test_input) != 2:
         print("Invalid dimensions!")
         return False
-    if 1 <= test_input[0] <= game.board_dimension[0] and 1 <= test_input[1] <= game.board_dimension[1]:
+    if 1 <= test_input[0] <= game.board_dimension['x'] and 1 <= test_input[1] <= game.board_dimension['y']:
         return True
     print("Invalid dimensions!")
     return False
@@ -96,13 +96,14 @@ board = False
 user_input = None
 board_size = None
 while not board:
-    board_size = input("Enter your board dimensions: ")
-    board = verify_board_size(board_size)
-game = Game(tuple([int(x) for x in board_size.split()]))
+    input_board_size = input("Enter your board dimensions: ")
+    board = verify_board_size(input_board_size)
+    board_size = tuple([int(x) for x in input_board_size.split()])
+game = Game(board_size)
 while not start_set:
     user_input = input("Enter the knight's starting position: ")
     start_set = verify_input(user_input)
-start = tuple([int(x) for x in user_input.split()])
+start = get_position_indexes(tuple([int(x) for x in user_input.split()]))
 game.set_position(start)
-game.check_possible_move()
+# game.check_possible_move()
 game.print_current_field()
