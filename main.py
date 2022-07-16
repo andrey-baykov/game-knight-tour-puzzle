@@ -61,7 +61,7 @@ class Game:
                 self.matrix[new_x][new_y] = " " * (self.cell_size - 1) + "O"
 
 
-def verify_input(input_string) -> bool:
+def verify_input(input_string, board_dimensions) -> bool:
     try:
         test_input = [int(x) for x in input_string.split()]
     except ValueError:
@@ -70,7 +70,7 @@ def verify_input(input_string) -> bool:
     if len(test_input) != 2:
         print("Invalid dimensions!")
         return False
-    if 1 <= test_input[0] <= game.board_dimension['x'] and 1 <= test_input[1] <= game.board_dimension['y']:
+    if 1 <= test_input[0] <= board_dimensions[0] and 1 <= test_input[1] <= board_dimensions[1]:
         return True
     print("Invalid dimensions!")
     return False
@@ -91,19 +91,24 @@ def verify_board_size(input_string) -> bool:
     return False
 
 
-start_set = False
-board = False
-user_input = None
-board_size = None
-while not board:
-    input_board_size = input("Enter your board dimensions: ")
-    board = verify_board_size(input_board_size)
-    board_size = tuple([int(x) for x in input_board_size.split()])
-game = Game(board_size)
-while not start_set:
-    user_input = input("Enter the knight's starting position: ")
-    start_set = verify_input(user_input)
-start = get_position_indexes(tuple([int(x) for x in user_input.split()]))
-game.set_position(start)
-# game.check_possible_move()
-game.print_current_field()
+def main():
+    start_set = False
+    board = False
+    user_input = None
+    board_size = None
+    while not board:
+        input_board_size = input("Enter your board dimensions: ")
+        board = verify_board_size(input_board_size)
+        board_size = tuple([int(x) for x in input_board_size.split()])
+    game = Game(board_size)
+    while not start_set:
+        user_input = input("Enter the knight's starting position: ")
+        start_set = verify_input(user_input, game.board_dimension)
+    start = get_position_indexes(tuple([int(x) for x in user_input.split()]))
+    game.set_position(start)
+    # game.check_possible_move()
+    game.print_current_field()
+
+
+if __name__ == '__main__':
+    main()
