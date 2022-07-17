@@ -6,13 +6,12 @@ class Game:
     Matrix[y][x] !!!!
 
     """
-    matrix = []
-    board_dimension = {'x': 0, 'y': 0}
-    cell_size = 0
-    last_move = tuple()
 
     def __init__(self, board_dimension):
         self.matrix = []
+        self.board_dimension = {'x': 0, 'y': 0}
+        self.cell_size = 0
+        self.last_move = tuple()
         self.board_dimension['x'] = board_dimension[0]
         self.board_dimension['y'] = board_dimension[1]
         self.cell_size = len(str(self.board_dimension['x'] * self.board_dimension['y']))
