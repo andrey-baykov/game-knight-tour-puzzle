@@ -12,6 +12,7 @@ class Game:
         self.board_dimension = {'x': 0, 'y': 0}
         self.cell_size = 0
         self.last_move = tuple()
+        self.possible_moves = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
         self.board_dimension['x'] = board_dimension[0]
         self.board_dimension['y'] = board_dimension[1]
         self.cell_size = len(str(self.board_dimension['x'] * self.board_dimension['y']))
@@ -22,7 +23,7 @@ class Game:
     def set_position(self, position, symbol='X') -> None:
         x, y = position
         self.matrix[y][x] = " " * (self.cell_size - 1) + symbol
-        self.last_move = position
+        # self.last_move = position
 
     def is_position_clear(self, position) -> bool:
         x, y = position
@@ -45,15 +46,30 @@ class Game:
             [" " * (self.cell_size - len(str(x + 1))) + str(x + 1) for x in range(self.board_dimension['x'])])
         print(f"   {last_str}")
 
-    def check_possible_move(self):
-        possible_moves = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
-        start_x = self.last_move[0]
-        start_y = self.last_move[1]
-        for move in possible_moves:
+    def check_possible_move(self, position, depth):
+        start_x = position[0]
+        start_y = position[1]
+        for move in self.possible_moves:
             new_x = start_x + move[0]
             new_y = start_y + move[1]
             if 0 <= new_x <= (self.board_dimension['x'] - 1) and 0 <= new_y <= (self.board_dimension['y'] - 1):
-                self.set_position([new_x, new_y], 'O')
+                pos = [new_x, new_y]
+                symbol = self.check_count_of_possible_move(pos, depth)
+                self.set_position(pos, str(symbol))
+
+    def check_count_of_possible_move(self, position, iterations) -> int:
+        output = 0
+        if iterations == 0:
+            return output
+        start_x = position[0]
+        start_y = position[1]
+        for move in self.possible_moves:
+            new_x = start_x + move[0]
+            new_y = start_y + move[1]
+            if 0 <= new_x <= (self.board_dimension['x'] - 1) and 0 <= new_y <= (self.board_dimension['y'] - 1):
+                if self.matrix[new_y][new_x].find('X') == -1 and self.matrix[new_y][new_x].find('*') == -1:
+                    output += 1
+        return output
 
 
 def get_position_indexes(position) -> tuple:
@@ -109,7 +125,8 @@ def main():
         start_set = verify_input(user_input, board_size)
     start = get_position_indexes(tuple([int(x) for x in user_input.split()]))
     game.set_position(start)
-    game.check_possible_move()
+    game.last_move = start
+    game.check_possible_move(game.last_move, 1)
     game.print_current_field()
 
 
